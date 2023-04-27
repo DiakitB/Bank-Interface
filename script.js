@@ -81,21 +81,31 @@ const inputClosePin = document.querySelector('.form__input--pin');
 /////////////////////////////////////////////////
 // Functions
 
-const displayMovements = function (movements, sort = false) {
+const displayMovements = function (acc, sort = false) {
   containerMovements.innerHTML = '';
 
-  const movs = sort ? movements.slice().sort((a, b) => a - b) : movements;
-
+  const movs = sort
+    ? acc.movements.slice().sort((a, b) => a - b)
+    : acc.movements;
+  console.log(acc);
   movs.forEach(function (mov, i) {
-    const type = mov > 0 ? 'deposit' : 'withdrawal';
-
+    const type = mov > 0 ? `deposit ` : 'withdrawal';
+    // console.log(acc.movementsDates[i]);
+    // const date = new Date(acc.movementsDates[i]);
+    // const day = `${date.getDate()}`.padStart(2, 0);
+    // const month = `${date.getMonth() + 1}`.padStart(2, 0);
+    // const year = `${date.getFullYear()}`;
+    // const moveDate = `Done on ${month}/${day}/${year}`;
+    // console.log(moveDate);
+    // console.log(date);
     const html = `
       <div class="movements__row">
         <div class="movements__type movements__type--${type}">${
       i + 1
     } ${type}</div>
-        <div class="movements__value">${mov}€</div>
+        <div class="movements__value">${mov.toFixed(2)}€</div>
       </div>
+      <
     `;
 
     containerMovements.insertAdjacentHTML('afterbegin', html);
@@ -142,7 +152,7 @@ createUsernames(accounts);
 
 const updateUI = function (acc) {
   // Display movements
-  displayMovements(acc.movements);
+  displayMovements(acc);
 
   // Display balance
   calcDisplayBalance(acc);
@@ -154,6 +164,18 @@ const updateUI = function (acc) {
 ///////////////////////////////////////
 // Event handlers
 let currentAccount;
+// const now = new Date();
+// const year = now.getFullYear();
+// const day = now.getDay();
+// const month = now.getMonth() + 1;
+// const date = now.getDate();
+// const hour = now.getHours();
+
+//FAKE ALWAYS LOGGED IN
+
+// currentAccount = account1;
+// updateUI(currentAccount);
+// containerApp.style.opacity = 100;
 
 btnLogin.addEventListener('click', function (e) {
   // Prevent form from submitting
@@ -170,7 +192,13 @@ btnLogin.addEventListener('click', function (e) {
       currentAccount.owner.split(' ')[0]
     }`;
     containerApp.style.opacity = 100;
-
+    const now = new Date();
+    const year = now.getFullYear();
+    const day = now.getDay();
+    const month = now.getMonth() + 1;
+    const date = now.getDate();
+    const hour = now.getHours();
+    labelDate.textContent = `${month}/${date}/${year}`;
     // Clear input fields
     inputLoginUsername.value = inputLoginPin.value = '';
     inputLoginPin.blur();
@@ -182,7 +210,7 @@ btnLogin.addEventListener('click', function (e) {
 
 btnTransfer.addEventListener('click', function (e) {
   e.preventDefault();
-  const amount = Number(inputTransferAmount.value);
+  const amount = +inputTransferAmount.value;
   const receiverAcc = accounts.find(
     acc => acc.username === inputTransferTo.value
   );
@@ -197,7 +225,8 @@ btnTransfer.addEventListener('click', function (e) {
     // Doing the transfer
     currentAccount.movements.push(-amount);
     receiverAcc.movements.push(amount);
-
+    currentAccount.movementsDates.push(new Date());
+    receiverAcc.movementsDates.push(new Date());
     // Update UI
     updateUI(currentAccount);
   }
@@ -206,7 +235,7 @@ btnTransfer.addEventListener('click', function (e) {
 btnLoan.addEventListener('click', function (e) {
   e.preventDefault();
 
-  const amount = Number(inputLoanAmount.value);
+  const amount = Math.floor(inputLoanAmount.value);
 
   if (amount > 0 && currentAccount.movements.some(mov => mov >= amount * 0.1)) {
     // Add movement
@@ -223,7 +252,7 @@ btnClose.addEventListener('click', function (e) {
 
   if (
     inputCloseUsername.value === currentAccount.username &&
-    Number(inputClosePin.value) === currentAccount.pin
+    +inputClosePin.value === currentAccount.pin
   ) {
     const index = accounts.findIndex(
       acc => acc.username === currentAccount.username
@@ -251,3 +280,65 @@ btnSort.addEventListener('click', function (e) {
 /////////////////////////////////////////////////
 /////////////////////////////////////////////////
 // LECTURES
+
+// console.log('23abb');
+// console.log(Number.parseInt('23abb'));
+// console.log(Math.sqrt(25));
+
+// console.log(Number.parseInt(Math.random() * 50) + 1);
+// console.log(Math.random());
+// //// this function generate radom number between to specific min and max pastedin
+// const randomInt = (min, max) =>
+//   Math.trunc(Math.random() * (max - min) + 1) + min;
+// console.log(randomInt(2, 5));
+
+// // console.log((2.7).toFixed(0));
+// console.log((2.7).toFixed(1));
+// console.log((2.7).toFixed(4));
+// console.log(8 % 5);
+// console.log(5 / 2);
+
+// const isEven = n => n % 2 === 0;
+// console.log(isEven(8));
+// console.log(isEven(5));
+// console.log(isEven(3));
+// console.log(isEven(6));
+
+// labelBalance.addEventListener('click', function () {
+//   [...document.querySelectorAll('.movements__row')].forEach((row, i) => {
+//     console.log(row.textContent.includes('deposit'));
+//     if (row.textContent.includes('deposit'))
+//       row.style.backgroundColor = 'green';
+//   });
+// });
+
+const tes = account2.movements;
+console.log(tes);
+
+tes.forEach((row, id) => {
+  if (row > 0) console.log(row);
+});
+const diameter = 287_460_000_000;
+console.log(diameter);
+console.log(Number.MAX_SAFE_INTEGER);
+
+// WORKING WITH DATE AND TIME
+// we use the Date constructor new Date()
+
+console.log(new Date('Decemeber 25 2015'));
+console.log(account1.movementsDates[0]);
+// we can also past in year, month, day, hour, second, milisecond
+
+//console.log(new Date(2032, 10, 5, 10, 35, 22));
+// since the new Date() is a function we can call methods on it. such as getFullYear(). getDate(), getHours and so on
+//exp
+
+const dateVaraiable = new Date(2032, 10, 5, 10, 35, 22);
+console.log(dateVaraiable);
+console.log(dateVaraiable.getFullYear());
+
+console.log(dateVaraiable.getDate());
+console.log(dateVaraiable.getTime());
+
+////////
+///////
